@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-const GallerySection = () => {
-  // Data Gambar
-  const images = [
-    "/images/galeri-1.jpg",
-    "/images/galeri-2.jpg", 
-    "/images/galeri-3.jpg"
-  ];
-
+const GallerySection = ({ customImages = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000); 
+  // Helper URL
+  const getImageUrl = (path) => `http://127.0.0.1:8000/storage/${path}`;
 
-    return () => clearInterval(interval);
-  }, [images.length]);
+  // UPDATE: Ambil maksimal 3 foto saja untuk slider
+  const displayedImages = customImages ? customImages.slice(0, 3) : [];
+  
+  // Validasi Data berdasarkan displayedImages
+  const hasData = displayedImages.length > 0;
+
+  useEffect(() => {
+    if (hasData) {
+      const interval = setInterval(() => {
+        // Gunakan displayedImages.length
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % displayedImages.length);
+      }, 4000); 
+
+      return () => clearInterval(interval);
+    }
+  }, [hasData, displayedImages.length]);
 
   return (
-    // UPDATE DISINI:
-    // 1. min-h-[calc(100vh-5rem)]: Agar section ini memenuhi sisa layar (Full Screen)
-    // 2. flex items-center justify-center: Agar konten galeri berada di tengah vertikal
     <section id="galeri" className="min-h-[calc(100vh-5rem)] bg-[#EBF4F6] flex items-center justify-center py-12">
       <div className="container mx-auto px-8 md:px-24 lg:px-32">
         
@@ -39,9 +41,9 @@ const GallerySection = () => {
             
             <Link to="/galeri">
               <button className="
-                bg-rptra-blue text-white font-bold text-sm md:text-base px-10 py-3 rounded-full shadow-md 
+                bg-[#008C9E] text-white font-bold text-sm md:text-base px-10 py-3 rounded-full shadow-md 
                 transition-all duration-300 ease-in-out font-poppins tracking-wide
-                hover:bg-rptra-dark 
+                hover:bg-[#007382] 
                 hover:scale-110 
                 hover:shadow-2xl
                 hover:-translate-y-1
@@ -51,43 +53,53 @@ const GallerySection = () => {
             </Link>
           </div>
 
-          {/* === BAGIAN KANAN: GAMBAR SLIDER === */}
+          {/* === BAGIAN KANAN: SLIDER === */}
           <div className="w-full md:w-7/12 relative" data-aos="fade-left">
-            <div className="relative h-[240px] md:h-[320px] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-xl">
-              {images.map((img, index) => (
-                <div 
-                  key={index}
-                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                    index === currentIndex ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <img 
-                    src={img} 
-                    alt={`Galeri ${index + 1}`} 
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
+            <div className="relative h-[240px] md:h-[320px] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-xl bg-gray-200">
+              
+              {hasData ? (
+                // UPDATE: Mapping menggunakan displayedImages (Max 3)
+                displayedImages.map((item, index) => (
+                  <div 
+                    key={item.id || index}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                      index === currentIndex ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <img 
+                      src={getImageUrl(item.image_path)} 
+                      alt={`Galeri ${index + 1}`} 
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  </div>
+                ))
+              ) : (
+                // FALLBACK JIKA KOSONG
+                <div className="flex items-center justify-center h-full text-gray-400 font-poppins">
+                  Belum ada foto galeri.
                 </div>
-              ))}
-              {/* Overlay Gradient bawah */}
-              <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/50 to-transparent"></div>
+              )}
             </div>
 
             {/* Indikator Slider */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-10">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                    index === currentIndex 
-                      ? "bg-white scale-125" 
-                      : "bg-white/50 hover:bg-white/80"
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
+            {hasData && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-10">
+                {displayedImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                      index === currentIndex 
+                        ? "bg-white scale-125" 
+                        : "bg-white/50 hover:bg-white/80"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
         </div>

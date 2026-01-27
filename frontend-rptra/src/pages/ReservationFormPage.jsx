@@ -114,7 +114,7 @@ const ReservationFormPage = ({ user }) => {
             formData.append('file_surat_pengantar', filePengantar);
         }
 
-        await api.post('/peminjaman', formData, {
+        await api.post('/bookings', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
 

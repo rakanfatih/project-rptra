@@ -30,7 +30,6 @@ class AuthController extends Controller
             'nama_depan' => $request->nama_depan,
             'nama_belakang' => $request->nama_belakang,
             'email' => $request->email,
-            // PERBAIKAN DISINI: Gunakan $request, bukan $validated
             'no_telepon' => $request->no_telepon, 
             'password' => Hash::make($request->password), 
             'role' => 'Warga', 

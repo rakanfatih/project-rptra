@@ -16,7 +16,7 @@ const DashboardWarga = ({ user, onLogout }) => {
   useEffect(() => {
     const fetchHistory = async () => {
         try {
-            const response = await api.get('/riwayat-saya');
+            const response = await api.get('/riwayat-saya'); 
             setBookings(response.data);
         } catch (error) {
             console.error("Gagal ambil riwayat:", error);

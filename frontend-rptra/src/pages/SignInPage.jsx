@@ -5,7 +5,7 @@ import api from '../api/axios';
 const SignInPage = ({ onLogin }) => {
   const navigate = useNavigate();
   
-  // State untuk Input Form
+  // State Input
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -13,49 +13,81 @@ const SignInPage = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // State Popup Error
+  const [errorPopup, setErrorPopup] = useState({ show: false, message: '' });
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true); // Mulai loading
+    setLoading(true);
 
     try {
-        // 1. Kirim data ke Backend Laravel
         const response = await api.post('/login', {
             email: email,
             password: password
         });
 
-        // 2. Ambil data dari respon backend
-        // (Pastikan key 'access_token' dan 'user' sesuai dengan respon AuthController Laravel)
         const { access_token, user } = response.data;
 
-        // 3. Simpan ke Local Storage (Browser)
         localStorage.setItem('token', access_token);
         localStorage.setItem('user', JSON.stringify(user));
 
-        // 4. Update State Global di App.jsx
         if (onLogin) onLogin(user);
 
-        // 5. Redirect sesuai Role
-        if (user.role === 'Admin') {
-            navigate('/admin/dashboard');
-        } else {
-            // Arahkan warga ke Dashboard atau Home
-            navigate('/dashboard'); 
-        }
+        // Redirect ditangani oleh App.jsx
 
     } catch (error) {
         console.error("Login Error:", error);
-        // Tampilkan pesan error dari backend atau pesan default
-        alert(error.response?.data?.message || 'Login Gagal. Periksa email dan password Anda.');
+
+        const msg = error.response?.data?.message || 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
+        setErrorPopup({ show: true, message: msg });
+        
     } finally {
-        setLoading(false); // Selesai loading
+        setLoading(false); 
     }
+  };
+
+  // === PERBAIKAN: TAMBAHKAN FUNGSI INI ===
+  const closePopup = () => {
+    setErrorPopup({ show: false, message: '' });
   };
 
   return (
     <div className="min-h-screen bg-[#F8F9FD] flex flex-col justify-center items-center px-4 relative text-sm">
       
-      {/* Link Kembali */}
+      {/* Pop Up Error */}
+      {errorPopup.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+            {/* Backdrop Gelap */}
+            <div 
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+                onClick={closePopup}
+            ></div>
+            
+            {/* Kotak Modal */}
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative z-10 transform transition-all scale-100 border border-red-100 text-center">
+                {/* Ikon Error (Silang Merah) */}
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </div>
+
+                <h3 className="text-lg font-bold text-gray-800 font-poppins mb-2">Login Gagal!</h3>
+                <p className="text-gray-500 text-xs font-poppins mb-6 leading-relaxed">
+                    {errorPopup.message}
+                </p>
+
+                <button 
+                    onClick={closePopup}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wide transition shadow-lg hover:shadow-red-500/30 active:scale-95"
+                >
+                    Coba Lagi
+                </button>
+            </div>
+        </div>
+      )}
+
+      {/* Tombol Kembali */}
       <Link 
         to="/" 
         className="absolute top-6 left-6 md:top-10 md:left-10 p-3 rounded-full bg-white shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300 group z-10"

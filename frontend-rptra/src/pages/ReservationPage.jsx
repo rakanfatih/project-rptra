@@ -247,7 +247,7 @@ const ReservationPage = ({ user }) => {
 
                 {/* Grid Angka */}
                 <div className="grid grid-cols-7 gap-y-1 gap-x-1 justify-items-center text-xs font-semibold z-10 relative">
-                    {['M', 'S', 'S', 'R', 'K', 'J', 'S'].map(day => (<div key={day} className="text-gray-400 font-bold text-[10px] mb-1">{day}</div>))}
+                    {['Mi', 'Se', 'Sel', 'Ra', 'Ka', 'Ju', 'Sa'].map(day => (<div key={day} className="text-gray-400 font-bold text-[10px] mb-1">{day}</div>))}
 
                     {calendarDays.map((item, index) => {
                         const isSelected = selectedDate === item.fullDate;

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 // Pages
 import LandingPage from './pages/LandingPage';
-import GaleriPage from './pages/GalleryPage'; 
+import GalleryPage from './pages/GalleryPage'; // Pastikan nama import sesuai file
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -18,9 +18,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Tambahkan loading state agar tidak kedip
+  const [loading, setLoading] = useState(true); 
 
-  // 1. Cek Login saat Refresh (Persistensi)
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
@@ -31,7 +30,6 @@ function App() {
     setLoading(false);
   }, []);
 
-  // 2. Handler Login & Logout
   const handleLogin = (userData) => {
     setUser(userData);
   };
@@ -42,25 +40,27 @@ function App() {
     setUser(null);
   };
 
-  if (loading) return null; // Tunggu cek localStorage selesai
+  if (loading) return null; 
 
   return (
     <Router>
       <Routes>
-        {/* === PUBLIC ROUTES === */}
+        
+        {/* HALAMAN PUBLIK */}
         <Route path="/" element={<LandingPage user={user} onLogout={handleLogout} />} />
-        <Route path="/galeri" element={<GaleriPage />} />
-        <Route path="/lupa-password" element={<ForgotPasswordPage />} />
+        
+        {/* PERBAIKAN: TAMBAHKAN ROUTE INI AGAR TIDAK BLANK */}
+        <Route path="/galeri" element={<GalleryPage />} />
 
-        {/* === HALAMAN LOGIN (PERBAIKAN LOGIKA REDIRECT) === */}
         <Route 
           path="/login" 
           element={
             !user ? (
-              <SignInPage onLogin={handleLogin} /> 
+              <SignInPage onLogin={handleLogin}/> 
+            ) : user.role === 'Admin' ? (
+              <Navigate to="/admin/dashboard" /> // Redirect ke Admin jika role Admin
             ) : (
-              // Jika sudah login, cek role untuk redirect yang benar
-              user.role === 'Admin' ? <Navigate to="/admin/dashboard" /> : <Navigate to="/dashboard" />
+              <Navigate to="/dashboard" />       // Redirect ke Warga jika bukan Admin
             )
           } 
         />
@@ -110,7 +110,6 @@ function App() {
           path="/admin/dashboard" 
           element={
             <ProtectedRoute user={user}>
-              {/* Opsional: Tambahan proteksi agar user biasa tidak bisa akses admin */}
               {user?.role === 'Admin' ? (
                  <AdminDashboardPage user={user} onLogout={handleLogout} />
               ) : (
@@ -120,6 +119,7 @@ function App() {
           } 
         />
 
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>

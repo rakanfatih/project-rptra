@@ -5,37 +5,35 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ApiController;
-use App\Http\Controllers\CmsController;
+use App\Http\Controllers\CmsController; 
 
-// === PUBLIC (Tanpa Login) ===
+Route::get('/cms/gallery', [CmsController::class, 'getGallery']);
+Route::get('/cms/footer', [CmsController::class, 'getFooter']);
+
+// Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/fasilitas', [ApiController::class, 'getFasilitas']);
+Route::post('/admin/login', [AdminController::class, 'login']);
 
-// === PRIVATE (Harus Login / Pakai Token) ===
 Route::middleware('auth:sanctum')->group(function () {
     
+    // User / Warga
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', function (Request $request) { return $request->user(); });
-
-    // Warga
-    Route::post('/peminjaman', [BookingController::class, 'store']);
-    Route::get('/riwayat-saya', [BookingController::class, 'history']);
-
-    // Admin
-    Route::prefix('admin')->middleware(\App\Http\Middleware\IsAdmin::class)->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'index']);
-        Route::patch('/approve/{id}', [AdminController::class, 'approve']);
-        Route::patch('/reject/{id}', [AdminController::class, 'reject']);
-    });
-
-    Route::get('/booked-dates', [BookingController::class, 'getBookedDates']);
+    Route::get('/user', [AuthController::class, 'user']);
     
-    Route::get('/cms/gallery', [CmsController::class, 'getGallery']);
+    // Booking
+    Route::post('/bookings', [BookingController::class, 'store']);
+    Route::get('/riwayat-saya', [BookingController::class, 'userBookings']);
+
+    // Admin Dashboard
+    Route::get('/admin/dashboard', [AdminController::class, 'index']);
+    Route::patch('/admin/approve/{id}', [AdminController::class, 'approve']);
+    Route::patch('/admin/reject/{id}', [AdminController::class, 'reject']);
+
+    // CMS: Modifikasi Data (Hanya Admin yang boleh)
     Route::post('/cms/gallery', [CmsController::class, 'uploadGallery']);
     Route::delete('/cms/gallery/{id}', [CmsController::class, 'deleteGallery']);
-
-    Route::get('/cms/footer', [CmsController::class, 'getFooter']);
     Route::post('/cms/footer', [CmsController::class, 'saveFooter']);
+
+    Route::get('/booked-dates', [BookingController::class, 'getBookedDates']);
 });

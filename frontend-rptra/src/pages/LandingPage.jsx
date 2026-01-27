@@ -7,13 +7,30 @@ import GallerySection from '../components/GallerySection';
 import Footer from '../components/Footer';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import api from '../api/axios';
 
 const LandingPage = ({ user, onLogout }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
 
+  const [galleryData, setGalleryData] = useState([]);
+  const [footerInfo, setFooterInfo] = useState(null);
+
   useEffect(() => {
     AOS.init({ duration: 1000, once: false, mirror: true });
+
+    const fetchCMS = async () => {
+      try {
+        const galleryRes = await api.get('/cms/gallery');
+        setGalleryData(galleryRes.data);
+
+        const footerRes = await api.get('/cms/footer');
+        setFooterInfo(footerRes.data);
+      } catch (error) {
+        console.error("Gagal load CMS:", error);
+      }
+    };
+    fetchCMS();
   }, []);
 
   useEffect(() => {
@@ -29,6 +46,23 @@ const LandingPage = ({ user, onLogout }) => {
       window.scrollTo(0, 0);
     }
   }, [location]);
+
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: false, mirror: true });
+
+    const fetchCMS = async () => {
+      try {
+        const galleryRes = await api.get('/cms/gallery');
+        setGalleryData(galleryRes.data);
+
+        const footerRes = await api.get('/cms/footer');
+        setFooterInfo(footerRes.data);
+      } catch (error) {
+        console.error("Gagal memuat data CMS", error);
+      }
+    };
+    fetchCMS();
+  }, []);
 
   return (
     <>
@@ -91,11 +125,11 @@ const LandingPage = ({ user, onLogout }) => {
       </section>
 
       <section id="galeri" className="scroll-mt-20">
-        <GallerySection />
+        <GallerySection customImages={galleryData} />
       </section>
 
       <section id="tentang" className="scroll-mt-20">
-        <Footer />
+        <Footer footerInfo={footerInfo} />
       </section>
     </>
   );
