@@ -20,7 +20,10 @@ const GallerySection = () => {
   }, [images.length]);
 
   return (
-    <section id="galeri" className="py-20 bg-[#EBF4F6]">
+    // UPDATE DISINI:
+    // 1. min-h-[calc(100vh-5rem)]: Agar section ini memenuhi sisa layar (Full Screen)
+    // 2. flex items-center justify-center: Agar konten galeri berada di tengah vertikal
+    <section id="galeri" className="min-h-[calc(100vh-5rem)] bg-[#EBF4F6] flex items-center justify-center py-12">
       <div className="container mx-auto px-8 md:px-24 lg:px-32">
         
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-20">
@@ -50,11 +53,6 @@ const GallerySection = () => {
 
           {/* === BAGIAN KANAN: GAMBAR SLIDER === */}
           <div className="w-full md:w-7/12 relative" data-aos="fade-left">
-            {/* PERUBAHAN DISINI:
-               - h-[300px] -> h-[240px] (Mobile lebih kecil)
-               - md:h-[400px] -> md:h-[320px] (Desktop lebih kecil)
-               - max-w-xl mx-auto (Agar gambar tidak terlalu lebar/stretch, opsional biar lebih rapi)
-            */}
             <div className="relative h-[240px] md:h-[320px] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-xl">
               {images.map((img, index) => (
                 <div 

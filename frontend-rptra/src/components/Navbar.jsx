@@ -8,16 +8,16 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
 
   // State untuk melacak section mana yang sedang aktif
   const [activeSection, setActiveSection] = useState('home');
+  
+  // State baru untuk Menu Mobile
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // === 1. LOGIKA SCROLL SPY (Mendeteksi posisi user) ===
+  // === 1. LOGIKA SCROLL SPY ===
   useEffect(() => {
     const handleScroll = () => {
-      // Jika tidak di halaman home, jangan jalankan logika scroll spy
       if (path !== '/') return;
 
-      const scrollPosition = window.scrollY + 120; // +120 untuk offset navbar & sedikit jarak
-
-      // Daftar ID section yang ada di LandingPage
+      const scrollPosition = window.scrollY + 120; 
       const sections = ['home', 'reservasi', 'galeri', 'tentang'];
 
       for (const section of sections) {
@@ -26,11 +26,7 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
           const offsetTop = element.offsetTop;
           const offsetHeight = element.offsetHeight;
 
-          // Cek apakah scroll saat ini berada di dalam area section ini
-          if (
-            scrollPosition >= offsetTop &&
-            scrollPosition < offsetTop + offsetHeight
-          ) {
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section);
           }
         }
@@ -38,17 +34,15 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    
-    // Jalankan sekali saat mount agar status awal benar
     handleScroll();
-
     return () => window.removeEventListener('scroll', handleScroll);
   }, [path]);
 
-  // === 2. HELPER SCROLL (Sama seperti sebelumnya) ===
+  // === 2. HELPER SCROLL ===
   const scrollToSection = (id) => {
-    setActiveSection(id); // Set manual biar instan berubah pas diklik
-    
+    setActiveSection(id);
+    setIsMobileMenuOpen(false); // Tutup menu mobile saat link diklik
+
     if (path !== '/') {
       navigate('/');
       setTimeout(() => {
@@ -65,64 +59,62 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
     }
   };
 
-  // === 3. HELPER CLASS UNTUK STYLE AKTIF ===
-  // Ini yang bikin garis biru muncul
   const getMenuClass = (id) => {
+    // Style Desktop
     return activeSection === id
-      ? "text-rptra-blue font-bold border-b-2 border-rptra-blue pb-1 transition-all duration-300" // Style AKTIF
-      : "text-gray-500 hover:text-rptra-blue pb-1 transition-colors duration-300 border-b-2 border-transparent hover:border-rptra-blue/30"; // Style TIDAK AKTIF
+      ? "text-rptra-blue font-bold border-b-2 border-rptra-blue pb-1 transition-all duration-300"
+      : "text-gray-500 hover:text-rptra-blue pb-1 transition-colors duration-300 border-b-2 border-transparent hover:border-rptra-blue/30";
+  };
+  
+  const getMobileMenuClass = (id) => {
+    // Style Mobile (Lebih besar area kliknya)
+    return activeSection === id
+      ? "text-rptra-blue font-bold bg-blue-50 w-full text-center py-3 rounded-lg transition-all"
+      : "text-gray-600 hover:text-rptra-blue w-full text-center py-3 hover:bg-gray-50 rounded-lg transition-all";
   };
 
   return (
     <nav className="bg-white fixed w-full top-0 z-50 shadow-sm h-20 flex items-center">
-      <div className="container mx-auto px-8 md:px-24 lg:px-32 relative flex justify-between items-center h-full">
+      <div className="container mx-auto px-6 md:px-24 lg:px-32 relative flex justify-between items-center h-full">
         
-        {/* LOGO */}
+        {/* LOGO (KIRI) */}
         <div className="flex items-center z-20">
           <button onClick={() => scrollToSection('home')}>
-            <img src="/images/logo.jpg" alt="Logo" className="h-12 w-auto object-contain cursor-pointer" />
+            <img src="/images/logo.jpg" alt="Logo" className="h-10 md:h-12 w-auto object-contain cursor-pointer" />
           </button>
         </div>
 
-        {/* MENU TENGAH */}
+        {/* MENU TENGAH (DESKTOP SAJA) */}
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2 text-sm font-poppins font-medium">
-          
-          <button 
-            onClick={() => scrollToSection('home')} 
-            className={getMenuClass('home')}
-          >
-            Home
-          </button>
-
-          <button 
-            onClick={() => scrollToSection('reservasi')} 
-            className={getMenuClass('reservasi')}
-          >
-            Reservasi
-          </button>
-
-          <button 
-            onClick={() => scrollToSection('galeri')} 
-            className={getMenuClass('galeri')}
-          >
-            Galeri
-          </button>
-
-          <button 
-            onClick={() => scrollToSection('tentang')} 
-            className={getMenuClass('tentang')}
-          >
-            Tentang
-          </button>
-
+          {['home', 'reservasi', 'galeri', 'tentang'].map((item) => (
+             <button key={item} onClick={() => scrollToSection(item)} className={getMenuClass(item)}>
+               {item.charAt(0).toUpperCase() + item.slice(1)}
+             </button>
+          ))}
         </div>
 
-        {/* AVA PROFIL */}
-        <div className="flex items-center z-20">
+        {/* BAGIAN KANAN: HAMBURGER (MOBILE) & PROFIL */}
+        <div className="flex items-center gap-4 z-20">
+          
+          {/* Tombol Hamburger (Hanya muncul di Mobile) */}
+          <button 
+            className="md:hidden text-gray-600 focus:outline-none p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              // Icon Silang (X)
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            ) : (
+              // Icon Garis Tiga (Hamburger)
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            )}
+          </button>
+
+          {/* Profil / Login Button */}
           {user ? (
             <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className={`w-10 h-10 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+              className={`w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden border-2 transition-all duration-300 ${
                 isProfileOpen ? 'border-rptra-blue scale-110 shadow-lg' : 'border-[#008C9E] shadow-md'
               }`}
             >
@@ -130,7 +122,7 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
             </button>
           ) : (
             <Link to="/login">
-              <button className="bg-[#008C9E] text-white px-6 py-2 rounded-full font-semibold text-sm shadow-md transition-all hover:bg-[#007a8a]">
+              <button className="bg-[#008C9E] text-white px-4 md:px-6 py-2 rounded-full font-semibold text-xs md:text-sm shadow-md transition-all hover:bg-[#007a8a]">
                 Masuk / Daftar
               </button>
             </Link>
@@ -138,6 +130,17 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
         </div>
 
       </div>
+
+      {/* === MENU MOBILE DROPDOWN === */}
+      {/* Muncul di bawah navbar hanya saat isMobileMenuOpen = true */}
+      <div className={`absolute top-20 left-0 w-full bg-white shadow-lg md:hidden flex flex-col items-center py-4 px-6 space-y-2 transition-all duration-300 origin-top ${isMobileMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
+          {['home', 'reservasi', 'galeri', 'tentang'].map((item) => (
+             <button key={item} onClick={() => scrollToSection(item)} className={getMobileMenuClass(item)}>
+               {item.charAt(0).toUpperCase() + item.slice(1)}
+             </button>
+          ))}
+      </div>
+
     </nav>
   );
 };

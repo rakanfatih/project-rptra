@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama_depan');
             $table->string('nama_belakang');
             $table->string('email')->unique();
+            $table->string('no_telepon');
+            $table->string('avatar')->default('/images/default-avatar.png');
             $table->string('password');
             $table->enum('role', ['Warga', 'Admin'])->default('Warga');
             $table->timestamps(); 

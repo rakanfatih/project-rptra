@@ -16,7 +16,6 @@ const LandingPage = ({ user, onLogout }) => {
     AOS.init({ duration: 1000, once: false, mirror: true });
   }, []);
 
-  // Efek Scroll saat pindah dari halaman lain (Dashboard -> Home)
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace('#', '');
@@ -40,7 +39,7 @@ const LandingPage = ({ user, onLogout }) => {
         setIsProfileOpen={setIsProfileOpen} 
       />
 
-      {/* Backdrop Blur */}
+      {/* Blur */}
       <div 
         className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-all duration-300 ease-in-out ${
           user && isProfileOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
@@ -48,12 +47,12 @@ const LandingPage = ({ user, onLogout }) => {
         onClick={() => setIsProfileOpen(false)} 
       ></div>
 
-      {/* Floating Menu */}
+      {/* Menu */}
       {user && (
         <div className={`fixed top-24 left-1/2 transform -translate-x-1/2 w-full max-w-5xl px-4 z-[60] transition-all duration-300 ease-in-out ${isProfileOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-5 pointer-events-none'}`}>
            <div className="bg-[#008C9E] rounded-xl p-4 md:p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between border border-white/20 backdrop-blur-sm relative overflow-hidden">
              
-             {/* ... (KONTEN MENU TETAP SAMA) ... */}
+             {/* KONTEN MENU */}
              <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: "url('/images/pattern.jpg')", backgroundRepeat: 'repeat', backgroundSize: '300px' }}></div>
              <div className="flex flex-col items-center z-10 mb-4 md:mb-0 w-full md:w-auto justify-center">
                 <div className="relative mb-2">
@@ -83,15 +82,12 @@ const LandingPage = ({ user, onLogout }) => {
         </div>
       )}
 
-      {/* === FIX: GANTI scroll-mt-24 JADI scroll-mt-20 (80px) === */}
-      {/* scroll-mt-20 = 5rem (80px), sama persis dengan tinggi Navbar */}
-
       <section id="home" className="scroll-mt-20">
         <HeroSection user={user} isProfileOpen={isProfileOpen} />
       </section>
       
       <section id="reservasi" className="scroll-mt-20">
-        <ServiceSection />
+        <ServiceSection user={user}/>
       </section>
 
       <section id="galeri" className="scroll-mt-20">

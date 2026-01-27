@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ServiceSection = () => {
+const ServiceSection = ({ user }) => {
   const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedFacility, setSelectedFacility] = useState(null);
+
   const handleBooking = (facilityName) => {
-    navigate('/reservasi', { state: { facility: facilityName } });
+    if (!user) {
+      setSelectedFacility(facilityName);
+      setShowLoginModal(true);
+    } else {
+      // UPDATE DISINI: Pastikan dikirim sebagai 'AULA' atau 'LAPANGAN' (Uppercase)
+      navigate('/reservasi', { state: { facility: facilityName.toUpperCase() } });
+    }
   };
 
   return (
-    <section className="py-12 bg-white"> 
+    <section className="min-h-[calc(100vh-5rem)] bg-white flex items-center justify-center py-12"> 
       <div className="container mx-auto px-6 text-center">
         
         {/*HEADER*/}
@@ -33,8 +42,9 @@ const ServiceSection = () => {
                 Dapat dipakai untuk kegiatan positif dan sosialisasi kepada masyarakat
               </p>
               
+              {/* UBAH DISINI: 'AULA' */}
               <button 
-                onClick={() => handleBooking('Aula')}
+                onClick={() => handleBooking('AULA')}
                 className="bg-rptra-blue text-white font-bold text-xs px-4 py-2 rounded-full hover:bg-blue-600 transition shadow-lg transform hover:scale-105"
               >
                 Klik Reservasi
@@ -53,9 +63,9 @@ const ServiceSection = () => {
                 Dapat digunakan untuk kegiatan olahraga serta kegiatan lainnya
               </p>
               
-              {/* UBAH TOMBOL DISINI */}
+              {/* UBAH DISINI: 'LAPANGAN' */}
               <button 
-                onClick={() => handleBooking('Lapangan')}
+                onClick={() => handleBooking('LAPANGAN')}
                 className="bg-rptra-blue text-white font-bold text-xs px-4 py-2 rounded-full hover:bg-blue-600 transition shadow-lg transform hover:scale-105"
               >
                 Klik Reservasi
@@ -63,9 +73,34 @@ const ServiceSection = () => {
 
             </div>
           </div>
-
         </div>
+
       </div>
+
+      {/* === MODAL PERINGATAN LOGIN === */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setShowLoginModal(false)}></div>
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full relative z-10 transform transition-all animate-scale-up flex flex-col items-center text-center font-poppins">
+             <button onClick={() => setShowLoginModal(false)} className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+             </button>
+            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#008C9E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-extrabold text-gray-800 mb-2">Akses Terbatas</h2>
+            <p className="text-gray-500 mb-6 text-sm leading-relaxed">
+              Anda harus masuk (login) terlebih dahulu untuk melakukan reservasi fasilitas {selectedFacility}.
+            </p>
+            <div className="w-full flex flex-col gap-3">
+                <button onClick={() => navigate('/login')} className="w-full py-3 bg-[#008C9E] text-white rounded-xl font-bold text-sm shadow-md hover:bg-[#00707e] transition-transform active:scale-95">Masuk Sekarang</button>
+                <button onClick={() => setShowLoginModal(false)} className="w-full py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-50 transition">Nanti Saja</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

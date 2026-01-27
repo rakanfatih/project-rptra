@@ -2,10 +2,12 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#005f6b] text-white pt-16 pb-8 font-poppins">
-      {/* PADDING DI SAMAKAN DENGAN NAVBAR & GALLERY:
-         px-8 md:px-24 lg:px-32 
-      */}
+    // UPDATE DISINI:
+    // 1. min-h-[calc(100vh-5rem)]: Agar footer memenuhi sisa layar (Full Screen)
+    // 2. flex flex-col justify-center: Agar konten footer berada di tengah vertikal
+    <footer className="bg-[#005f6b] text-white font-poppins min-h-[calc(100vh-5rem)] flex flex-col justify-center py-12">
+      
+      {/* Container utama dengan padding konsisten */}
       <div className="container mx-auto px-8 md:px-24 lg:px-32">
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
