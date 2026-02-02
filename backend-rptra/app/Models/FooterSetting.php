@@ -9,12 +9,11 @@ class FooterSetting extends Model
 {
     use HasFactory;
 
-    // Tambahkan 'jam_operasional' ke sini agar bisa di-save
     protected $fillable = [
         'alamat', 
         'email', 
         'telepon', 
-        'jam_operasional', // <--- WAJIB DITAMBAHKAN
+        'jam_operasional',
         'instagram', 
         'deskripsi'
     ];

@@ -17,7 +17,7 @@ Route::post('/admin/login', [AdminController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     
-    // User / Warga
+    // User 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     
@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/admin/approve/{id}', [AdminController::class, 'approve']);
     Route::patch('/admin/reject/{id}', [AdminController::class, 'reject']);
 
-    // CMS: Modifikasi Data (Hanya Admin yang boleh)
+    // Modifikasi Data (Landing Page) (Admin)
     Route::post('/cms/gallery', [CmsController::class, 'uploadGallery']);
     Route::delete('/cms/gallery/{id}', [CmsController::class, 'deleteGallery']);
     Route::post('/cms/footer', [CmsController::class, 'saveFooter']);

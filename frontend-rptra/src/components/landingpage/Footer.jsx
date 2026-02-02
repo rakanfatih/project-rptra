@@ -1,6 +1,7 @@
+//LANDING PAGE
+
 import React from 'react';
 
-// Menerima props footerInfo dari LandingPage
 const Footer = ({ footerInfo }) => {
   return (
     <footer className="bg-[#005f6b] text-white font-poppins min-h-[calc(100vh-5rem)] flex flex-col justify-center py-12">
@@ -9,7 +10,7 @@ const Footer = ({ footerInfo }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           
-          {/* KOLOM 1: TENTANG */}
+          {/* TENTANG */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
                <img 
@@ -27,7 +28,7 @@ const Footer = ({ footerInfo }) => {
             </p>
           </div>
 
-          {/* KOLOM 2: KONTAK */}
+          {/* KONTAK */}
           <div>
             <h3 className="font-bold text-lg mb-6 border-b border-white/20 pb-2 inline-block">
               Hubungi Kami
@@ -48,7 +49,7 @@ const Footer = ({ footerInfo }) => {
             </ul>
           </div>
 
-          {/* KOLOM 3: JAM OPERASIONAL */}
+          {/* JAM OPERASIONAL */}
           <div>
             <h3 className="font-bold text-lg mb-6 border-b border-white/20 pb-2 inline-block">
               Jam Operasional

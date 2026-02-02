@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import HeroSection from '../components/HeroSection';
-import ServiceSection from '../components/ServiceSection';
-import GallerySection from '../components/GallerySection';
-import Footer from '../components/Footer';
+import Navbar from '../components/landingpage/Navbar';
+import HeroSection from '../components/landingpage/HeroSection';
+import ServiceSection from '../components/landingpage/ServiceSection';
+import GallerySection from '../components/landingpage/GallerySection';
+import Footer from '../components/landingpage/Footer';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import api from '../api/axios';

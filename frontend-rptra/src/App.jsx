@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'; 
+import React from 'react'; 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
-// Pages
+import { useAuth } from './hooks/useAuth';
 import LandingPage from './pages/LandingPage';
-import GalleryPage from './pages/GalleryPage'; // Pastikan nama import sesuai file
+import GalleryPage from './pages/GalleryPage'; 
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -13,32 +12,10 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import ReservationPage from './pages/ReservationPage';
 import ReservationFormPage from './pages/ReservationFormPage';
 
-// Components
 import ProtectedRoute from './components/ProtectedRoute'; 
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); 
-
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    if (loggedInUser && token) {
-      setUser(JSON.parse(loggedInUser));
-    }
-    setLoading(false);
-  }, []);
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    setUser(null);
-  };
+  const { user, loading, handleLogin, handleLogout } = useAuth();
 
   if (loading) return null; 
 
@@ -46,25 +23,25 @@ function App() {
     <Router>
       <Routes>
         
-        {/* HALAMAN PUBLIK */}
+        {/* publik */}
         <Route path="/" element={<LandingPage user={user} onLogout={handleLogout} />} />
-        
-        {/* PERBAIKAN: TAMBAHKAN ROUTE INI AGAR TIDAK BLANK */}
         <Route path="/galeri" element={<GalleryPage />} />
 
+        {/* warga (login) */}
         <Route 
           path="/login" 
           element={
             !user ? (
               <SignInPage onLogin={handleLogin}/> 
             ) : user.role === 'Admin' ? (
-              <Navigate to="/admin/dashboard" /> // Redirect ke Admin jika role Admin
+              <Navigate to="/admin/dashboard" /> 
             ) : (
-              <Navigate to="/dashboard" />       // Redirect ke Warga jika bukan Admin
+              <Navigate to="/dashboard" />       
             )
           } 
         />
         
+        {/* admin */}
         <Route 
           path="/admin/login" 
           element={
@@ -77,8 +54,7 @@ function App() {
           element={!user ? <SignUpPage /> : <Navigate to="/" />} 
         />
 
-
-        {/* === PROTECTED ROUTES (Harus Login) === */}
+        {/* harus login */}
         <Route 
           path="/dashboard" 
           element={
@@ -119,7 +95,6 @@ function App() {
           } 
         />
 
-        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>

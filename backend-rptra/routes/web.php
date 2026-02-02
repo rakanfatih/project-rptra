@@ -25,7 +25,7 @@ Route::get('/admin/dashboard', function() {
     return 'Halo Admin! Ini Dashboard Anda.';
 });
 
-// --- warga ---
+// warga 
 Route::middleware(['auth'])->group(function () {
     // menampilkan Form
     Route::get('/ajukan-peminjaman', [BookingController::class, 'create'])->name('peminjaman.create');
@@ -35,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ajukan-peminjaman', [BookingController::class, 'store'])->name('peminjaman.store');
 });
 
-// --- admin ---
+// admin
 Route::middleware(['auth', 'is_admin'])->group(function () {
     // dashboard 
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

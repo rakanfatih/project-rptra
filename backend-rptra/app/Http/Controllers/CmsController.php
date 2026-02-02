@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class CmsController extends Controller
 {
-    // --- GALLERY ---
+    // GALLERY
     public function getGallery() {
         return response()->json(Gallery::latest()->get());
     }
@@ -34,7 +34,6 @@ class CmsController extends Controller
     public function deleteGallery($id) {
         $gallery = Gallery::find($id);
         if ($gallery) {
-            // Hapus file fisik
             Storage::disk('public')->delete($gallery->image_path);
             $gallery->delete();
             return response()->json(['message' => 'Foto dihapus']);
@@ -42,23 +41,17 @@ class CmsController extends Controller
         return response()->json(['message' => 'Foto tidak ditemukan'], 404);
     }
 
-    // --- FOOTER ---
+    // FOOTER
     public function getFooter() {
-        // Ambil data pertama, jika tidak ada buat default kosong
         return response()->json(FooterSetting::first() ?? new FooterSetting());
     }
 
     public function saveFooter(Request $request) {
-        // Ambil data pertama atau buat baru jika kosong
         $footer = FooterSetting::first() ?? new FooterSetting();
-        
         $footer->alamat = $request->alamat;
         $footer->email = $request->email;
         $footer->telepon = $request->telepon;
-        
-        // SIMPAN JAM OPERASIONAL
         $footer->jam_operasional = $request->jam_operasional; 
-        
         $footer->instagram = $request->instagram;
         $footer->deskripsi = $request->deskripsi;
         

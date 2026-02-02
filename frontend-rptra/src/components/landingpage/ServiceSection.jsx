@@ -1,3 +1,5 @@
+//LANDING PAGE
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +13,6 @@ const ServiceSection = ({ user }) => {
       setSelectedFacility(facilityName);
       setShowLoginModal(true);
     } else {
-      // UPDATE DISINI: Pastikan dikirim sebagai 'AULA' atau 'LAPANGAN' (Uppercase)
       navigate('/reservasi', { state: { facility: facilityName.toUpperCase() } });
     }
   };
@@ -20,7 +21,7 @@ const ServiceSection = ({ user }) => {
     <section className="min-h-[calc(100vh-5rem)] bg-white flex items-center justify-center py-12"> 
       <div className="container mx-auto px-6 text-center">
         
-        {/*HEADER*/}
+        {/* HEADER */}
         <h2 className="font-poppins font-semibold text-xl md:text-2xl uppercase mb-3 tracking-tight" data-aos="fade-down">
           LAYANAN YANG TERSEDIA DI RPTRA
         </h2>
@@ -29,10 +30,10 @@ const ServiceSection = ({ user }) => {
           Layanan ini diberikan oleh kelurahan Lenteng Agung untuk kegiatan positif, sosialisasi, dan kegiatan lainnya untuk warga kelurahan Lenteng Agung seperti :
         </p>
 
-        {/* === GRID KARTU === */}
+        {/* GRID KARTU  */}
         <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
           
-          {/* KARTU AULA */}
+          {/* AULA */}
           <div className="relative h-[250px] rounded-[24px] overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300" data-aos="fade-up">
             <img src="/images/aula.jpg" alt="Aula" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-110" />
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
@@ -41,8 +42,6 @@ const ServiceSection = ({ user }) => {
               <p className="font-poppins font-medium text-xs text-center mb-3 max-w-[180px] drop-shadow-md">
                 Dapat dipakai untuk kegiatan positif dan sosialisasi kepada masyarakat
               </p>
-              
-              {/* UBAH DISINI: 'AULA' */}
               <button 
                 onClick={() => handleBooking('AULA')}
                 className="bg-rptra-blue text-white font-bold text-xs px-4 py-2 rounded-full hover:bg-blue-600 transition shadow-lg transform hover:scale-105"
@@ -53,7 +52,7 @@ const ServiceSection = ({ user }) => {
             </div>
           </div>
 
-          {/* KARTU LAPANGAN */}
+          {/* LAPANGAN */}
           <div className="relative h-[250px] rounded-[24px] overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300" data-aos="fade-up" data-aos-delay="200">
             <img src="/images/lapangan.jpg" alt="Lapangan" loading="lazy" className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-110" />
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
@@ -62,8 +61,6 @@ const ServiceSection = ({ user }) => {
               <p className="font-poppins font-medium text-xs text-center mb-3 max-w-[180px] drop-shadow-md">
                 Dapat digunakan untuk kegiatan olahraga serta kegiatan lainnya
               </p>
-              
-              {/* UBAH DISINI: 'LAPANGAN' */}
               <button 
                 onClick={() => handleBooking('LAPANGAN')}
                 className="bg-rptra-blue text-white font-bold text-xs px-4 py-2 rounded-full hover:bg-blue-600 transition shadow-lg transform hover:scale-105"
@@ -77,7 +74,7 @@ const ServiceSection = ({ user }) => {
 
       </div>
 
-      {/* === MODAL PERINGATAN LOGIN === */}
+      {/* pop up peringatan login */}
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setShowLoginModal(false)}></div>

@@ -1,22 +1,17 @@
+//LANDING PAGE
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const GallerySection = ({ customImages = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Helper URL
   const getImageUrl = (path) => `http://127.0.0.1:8000/storage/${path}`;
-
-  // UPDATE: Ambil maksimal 3 foto saja untuk slider
   const displayedImages = customImages ? customImages.slice(0, 3) : [];
-  
-  // Validasi Data berdasarkan displayedImages
   const hasData = displayedImages.length > 0;
 
   useEffect(() => {
     if (hasData) {
       const interval = setInterval(() => {
-        // Gunakan displayedImages.length
         setCurrentIndex((prevIndex) => (prevIndex + 1) % displayedImages.length);
       }, 4000); 
 
@@ -30,7 +25,7 @@ const GallerySection = ({ customImages = [] }) => {
         
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-20">
           
-          {/* === BAGIAN KIRI: TEKS & TOMBOL === */}
+          {/* button */}
           <div className="w-full md:w-5/12 text-center md:text-left" data-aos="fade-right">
             <h2 className="font-poppins font-bold text-3xl md:text-4xl text-black mb-2">
               Galeri RPTRA
@@ -53,12 +48,11 @@ const GallerySection = ({ customImages = [] }) => {
             </Link>
           </div>
 
-          {/* === BAGIAN KANAN: SLIDER === */}
+          {/* slider */}
           <div className="w-full md:w-7/12 relative" data-aos="fade-left">
             <div className="relative h-[240px] md:h-[320px] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-xl bg-gray-200">
               
               {hasData ? (
-                // UPDATE: Mapping menggunakan displayedImages (Max 3)
                 displayedImages.map((item, index) => (
                   <div 
                     key={item.id || index}
@@ -76,14 +70,12 @@ const GallerySection = ({ customImages = [] }) => {
                   </div>
                 ))
               ) : (
-                // FALLBACK JIKA KOSONG
                 <div className="flex items-center justify-center h-full text-gray-400 font-poppins">
                   Belum ada foto galeri.
                 </div>
               )}
             </div>
 
-            {/* Indikator Slider */}
             {hasData && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-10">
                 {displayedImages.map((_, index) => (

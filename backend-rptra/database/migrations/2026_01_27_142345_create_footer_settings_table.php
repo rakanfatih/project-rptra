@@ -16,10 +16,7 @@ return new class extends Migration
             $table->text('alamat')->nullable();
             $table->string('email')->nullable();
             $table->string('telepon')->nullable();
-            
-            // KOLOM BARU DITAMBAHKAN DISINI
             $table->string('jam_operasional')->nullable(); 
-            
             $table->string('instagram')->nullable();
             $table->text('deskripsi')->nullable();
             $table->timestamps();

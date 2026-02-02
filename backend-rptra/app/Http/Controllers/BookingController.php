@@ -29,6 +29,7 @@ class BookingController extends Controller
         $pathKtp = $request->file('file_ktp')->store('dokumen/ktp', 'public');
         $pathPermohonan = $request->file('file_surat_permohonan')->store('dokumen/permohonan', 'public');
         $pathPengantar = null;
+        
         if ($request->hasFile('file_surat_pengantar')) {
             $pathPengantar = $request->file('file_surat_pengantar')->store('dokumen/pengantar', 'public');
         }

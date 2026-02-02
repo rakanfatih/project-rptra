@@ -12,17 +12,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('fasilitas_id')->constrained('fasilitas')->onDelete('cascade');
-            
             $table->enum('kategori', ['Umum', 'Organisasi', 'Kampus']); 
             $table->text('keperluan_peminjaman');
             $table->date('tanggal_reservasi');
             $table->string('waktu_mulai');
-            
-            // --- UPDATE DISINI: KOLOM FILE DIPISAH ---
-            $table->string('file_ktp'); // Wajib
-            $table->string('file_surat_permohonan'); // Wajib
-            $table->string('file_surat_pengantar')->nullable(); // Boleh kosong (Khusus Umum)
-            
+            $table->string('file_ktp'); 
+            $table->string('file_surat_permohonan'); 
+            $table->string('file_surat_pengantar')->nullable(); 
             $table->enum('status_peminjaman', ['Diajukan', 'Disetujui', 'Ditolak'])->default('Diajukan');
             $table->timestamps();
         });

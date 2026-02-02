@@ -5,14 +5,10 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
-
-  // State untuk melacak section mana yang sedang aktif
   const [activeSection, setActiveSection] = useState('home');
-  
-  // State baru untuk Menu Mobile
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // === 1. LOGIKA SCROLL SPY ===
+  // scroll spy
   useEffect(() => {
     const handleScroll = () => {
       if (path !== '/') return;
@@ -38,10 +34,10 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [path]);
 
-  // === 2. HELPER SCROLL ===
+  // scroll helper
   const scrollToSection = (id) => {
     setActiveSection(id);
-    setIsMobileMenuOpen(false); // Tutup menu mobile saat link diklik
+    setIsMobileMenuOpen(false); 
 
     if (path !== '/') {
       navigate('/');
@@ -60,14 +56,12 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
   };
 
   const getMenuClass = (id) => {
-    // Style Desktop
     return activeSection === id
       ? "text-rptra-blue font-bold border-b-2 border-rptra-blue pb-1 transition-all duration-300"
       : "text-gray-500 hover:text-rptra-blue pb-1 transition-colors duration-300 border-b-2 border-transparent hover:border-rptra-blue/30";
   };
   
   const getMobileMenuClass = (id) => {
-    // Style Mobile (Lebih besar area kliknya)
     return activeSection === id
       ? "text-rptra-blue font-bold bg-blue-50 w-full text-center py-3 rounded-lg transition-all"
       : "text-gray-600 hover:text-rptra-blue w-full text-center py-3 hover:bg-gray-50 rounded-lg transition-all";
@@ -77,14 +71,14 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
     <nav className="bg-white fixed w-full top-0 z-50 shadow-sm h-20 flex items-center">
       <div className="container mx-auto px-6 md:px-24 lg:px-32 relative flex justify-between items-center h-full">
         
-        {/* LOGO (KIRI) */}
+        {/* logo */}
         <div className="flex items-center z-20">
           <button onClick={() => scrollToSection('home')}>
             <img src="/images/logo.jpg" alt="Logo" className="h-10 md:h-12 w-auto object-contain cursor-pointer" />
           </button>
         </div>
 
-        {/* MENU TENGAH (DESKTOP SAJA) */}
+        {/* menu (dekstop only) */}
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2 text-sm font-poppins font-medium">
           {['home', 'reservasi', 'galeri', 'tentang'].map((item) => (
              <button key={item} onClick={() => scrollToSection(item)} className={getMenuClass(item)}>
@@ -93,24 +87,21 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
           ))}
         </div>
 
-        {/* BAGIAN KANAN: HAMBURGER (MOBILE) & PROFIL */}
+        {/* hamburger (mobile only) */}
         <div className="flex items-center gap-4 z-20">
           
-          {/* Tombol Hamburger (Hanya muncul di Mobile) */}
           <button 
             className="md:hidden text-gray-600 focus:outline-none p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
-              // Icon Silang (X)
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             ) : (
-              // Icon Garis Tiga (Hamburger)
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             )}
           </button>
 
-          {/* Profil / Login Button */}
+          {/* button profil/login  */}
           {user ? (
             <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -131,8 +122,7 @@ const Navbar = ({ user, isProfileOpen, setIsProfileOpen }) => {
 
       </div>
 
-      {/* === MENU MOBILE DROPDOWN === */}
-      {/* Muncul di bawah navbar hanya saat isMobileMenuOpen = true */}
+      {/* dropdown (mobile) */}
       <div className={`absolute top-20 left-0 w-full bg-white shadow-lg md:hidden flex flex-col items-center py-4 px-6 space-y-2 transition-all duration-300 origin-top ${isMobileMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}`}>
           {['home', 'reservasi', 'galeri', 'tentang'].map((item) => (
              <button key={item} onClick={() => scrollToSection(item)} className={getMobileMenuClass(item)}>

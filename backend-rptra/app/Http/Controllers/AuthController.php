@@ -9,15 +9,13 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // REGISTER
     public function register(Request $request)
     {
-        // 1. Validasi
         $validator = Validator::make($request->all(), [
             'nama_depan' => 'required|string|max:255',
             'nama_belakang' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'no_telepon' => 'required|string|max:15', // Wajib diisi
+            'no_telepon' => 'required|string|max:15',
             'password' => 'required|min:6|confirmed', 
         ]);
 
@@ -25,7 +23,6 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // 2. Simpan ke Database
         $user = User::create([
             'nama_depan' => $request->nama_depan,
             'nama_belakang' => $request->nama_belakang,
@@ -33,10 +30,8 @@ class AuthController extends Controller
             'no_telepon' => $request->no_telepon, 
             'password' => Hash::make($request->password), 
             'role' => 'Warga', 
-            // Avatar akan otomatis pakai default dari database
         ]);
 
-        // 3. Buat Token (Auto Login)
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -47,7 +42,6 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // LOGIN
     public function login(Request $request)
     {
         $request->validate([
@@ -63,21 +57,17 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Hapus token lama (opsional, agar 1 device login)
         $user->tokens()->delete();
-
-        // Buat Token Baru
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login berhasil',
-            'access_token' => $token, // Kunci token yg dipakai di frontend
+            'access_token' => $token, 
             'token_type' => 'Bearer',
             'user' => $user
         ]);
     }
 
-    // LOGOUT
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

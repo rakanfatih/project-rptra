@@ -11,7 +11,6 @@ class Peminjaman extends Model
 
     protected $table = 'peminjaman';
     
-    // UPDATE DISINI: Pastikan semua kolom baru terdaftar
     protected $fillable = [
         'user_id',
         'fasilitas_id',
@@ -20,12 +19,9 @@ class Peminjaman extends Model
         'peralatan_tambahan',
         'tanggal_reservasi',
         'waktu_mulai',
-        
-        // Ganti 'file_dokumen_syarat' dengan 3 kolom ini:
         'file_ktp',
         'file_surat_permohonan',
         'file_surat_pengantar',
-        
         'status_peminjaman',
     ];
 
