@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { useAdminBookings } from '../hooks/useAdminBookings'; 
-
 import BookingDetailModal from '../components/modals/BookingDetailModal';
 import AdminSideBar from '../components/admin/AdminSideBar';
 import DashboardTab from '../components/admin/tabs/DashboardTab';
@@ -15,17 +14,19 @@ const AdminDashboardPage = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  const { bookings, loading, updateBookingStatus } = useAdminBookings(() => {
+  const handleSessionExpired = useCallback(() => {
     alert("Sesi habis. Silakan login ulang.");
     onLogout();
     navigate('/admin/login');
-  });
+  }, [onLogout, navigate]);
+
+  const { bookings, loading, updateBookingStatus } = useAdminBookings(handleSessionExpired);
 
   const handleModalAction = async (id, action) => {
     const success = await updateBookingStatus(id, action);
     if (success) {
       setSelectedBooking(null);
-      alert(`Status berhasil diubah!`);
+      // alert(`Status berhasil diubah!`); 
     } else {
       alert("Gagal mengubah status.");
     }
@@ -39,8 +40,8 @@ const AdminDashboardPage = ({ user, onLogout }) => {
         return (
           <ReservationTab 
             bookings={bookings} 
-            loading={loading} 
-            onSelectBooking={setSelectedBooking} 
+            loading={loading}
+            onSelectBooking={setSelectedBooking}
             onUpdateStatus={updateBookingStatus} 
           />
         );
@@ -55,8 +56,10 @@ const AdminDashboardPage = ({ user, onLogout }) => {
     }
   };
 
+  if (!user) return null;
+
   return (
-    <div className="min-h-screen bg-[#F8F9FD] font-poppins relative">
+    <div className="min-h-screen bg-[#F8F9FD] font-poppins print:bg-white">
       <div className="container mx-auto px-4 md:px-12 lg:px-20 py-10">
         
         {/* header */}
@@ -90,8 +93,9 @@ const AdminDashboardPage = ({ user, onLogout }) => {
       {selectedBooking && (
         <BookingDetailModal 
             booking={selectedBooking} 
-            onClose={() => setSelectedBooking(null)} 
-            onAction={handleModalAction} 
+            onClose={() => setSelectedBooking(null)}
+            onApprove={() => handleModalAction(selectedBooking.id, 'approve')}
+            onReject={() => handleModalAction(selectedBooking.id, 'reject')}
         />
       )}
     </div>

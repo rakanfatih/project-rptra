@@ -28,16 +28,11 @@ class BookingController extends Controller
 
         $pathKtp = $request->file('file_ktp')->store('dokumen/ktp', 'public');
         $pathPermohonan = $request->file('file_surat_permohonan')->store('dokumen/permohonan', 'public');
-        $pathPengantar = null;
-        
-        if ($request->hasFile('file_surat_pengantar')) {
-            $pathPengantar = $request->file('file_surat_pengantar')->store('dokumen/pengantar', 'public');
-        }
+        $pathPengantar = $request->hasFile('file_surat_pengantar') 
+            ? $request->file('file_surat_pengantar')->store('dokumen/pengantar', 'public') 
+            : null;
 
-        $fasilitasId = $request->fasilitas_id;
-        if (!is_numeric($fasilitasId)) {
-            $fasilitasId = (strtoupper($fasilitasId) == 'AULA') ? 1 : 2; 
-        }
+        $fasilitasId = (strtoupper($request->fasilitas_id) == 'AULA') ? 1 : 2; 
 
         $peminjaman = Peminjaman::create([
             'user_id' => $request->user()->id,
@@ -59,33 +54,10 @@ class BookingController extends Controller
         ], 201);
     }
 
-    public function history(Request $request)
+    public function userBookings(Request $request)
     {
-        $riwayat = Peminjaman::where('user_id', $request->user()->id)
-                            ->with('fasilitas') 
-                            ->latest() 
-                            ->get();
-
-        $formatted = $riwayat->map(function($item) {
-            return [
-                'id' => $item->id,
-                'facility' => $item->fasilitas->nama_fasilitas ?? 'Fasilitas Umum',
-                'date' => $item->tanggal_reservasi, 
-                'time' => $item->waktu_mulai,      
-                'status' => $item->status_peminjaman, 
-                'purpose' => $item->keperluan_peminjaman,
-                'type' => $item->kategori,
-            ];
-        });
-
-        return response()->json($formatted);
-    }
-
-    public function riwayatSaya(Request $request)
-    {
-        $userId = Auth::id();
         $history = Peminjaman::with('fasilitas') 
-                    ->where('user_id', $userId) 
+                    ->where('user_id', $request->user()->id) 
                     ->orderBy('created_at', 'desc')
                     ->get();
 
@@ -95,7 +67,7 @@ class BookingController extends Controller
                 'facility' => $item->fasilitas->nama_fasilitas ?? 'Fasilitas Umum',
                 'date' => $item->tanggal_reservasi,
                 'time' => $item->waktu_mulai,
-                'status' => $this->mapStatus($item->status_peminjaman),
+                'status' => $this->mapStatus($item->status_peminjaman), 
                 'purpose' => $item->keperluan_peminjaman,
             ];
         });
@@ -103,31 +75,11 @@ class BookingController extends Controller
         return response()->json($formatted);
     }
 
-    public function userBookings(Request $request)
-    {
-        $history = \App\Models\Peminjaman::with('fasilitas')
-                ->where('user_id', $request->user()->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-    $formatted = $history->map(function($item) {
-        return [
-            'id'       => $item->id,
-            'facility' => $item->fasilitas->nama_fasilitas ?? 'Fasilitas',
-            'date'     => $item->tanggal_reservasi,
-            'time'     => $item->waktu_mulai,
-            'status'   => $item->status_peminjaman, 
-            'purpose'  => $item->keperluan_peminjaman,
-        ];
-    });
-
-    return response()->json($formatted);
-    }
-
     public function getBookedDates(Request $request)
     {
         $facilityName = $request->query('facility');
         $facilityId = ($facilityName === 'LAPANGAN') ? 2 : 1; 
+        
         $bookedDates = Peminjaman::where('fasilitas_id', $facilityId)
             ->whereIn('status_peminjaman', ['Diajukan', 'Menunggu Konfirmasi', 'Disetujui']) 
             ->pluck('tanggal_reservasi'); 

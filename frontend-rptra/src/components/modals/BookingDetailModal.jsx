@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const BookingDetailModal = ({ booking, onClose, onAction }) => {
+const BookingDetailModal = ({ booking, onClose, onApprove, onReject }) => { 
+  const [copyStatus, setCopyStatus] = useState('Salin');
+
   if (!booking) return null;
 
   const getFileUrl = (path) => {
@@ -9,6 +11,13 @@ const BookingDetailModal = ({ booking, onClose, onAction }) => {
   };
 
   const phoneNumber = booking.user?.no_telepon || booking.no_telepon || "-";
+
+  // copy to clipboard
+  const handleCopy = () => {
+    navigator.clipboard.writeText(phoneNumber);
+    setCopyStatus('Tersalin!');
+    setTimeout(() => setCopyStatus('Salin'), 2000);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in print:hidden">
@@ -19,95 +28,102 @@ const BookingDetailModal = ({ booking, onClose, onAction }) => {
         {/* HEADER */}
         <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-                <button onClick={onClose} className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] bg-[#7C7C7C] rounded-full flex items-center justify-center hover:bg-gray-600 transition shadow-sm">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <button onClick={onClose} className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] bg-[#7C7C7C] rounded-full flex items-center justify-center hover:bg-gray-600 transition shadow-sm text-white">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 </button>
-                <h2 className="font-montserrat font-bold text-[20px] md:text-[30px] text-black uppercase leading-none">
-                    DATA {booking.type || booking.kategori || 'PEMINJAM'}
-                </h2>
+                <h2 className="text-xl md:text-2xl font-bold text-black font-poppins">Detail Data Reservasi</h2>
             </div>
-            
-            {(booking.status === 'Diajukan' || booking.status === 'Menunggu Konfirmasi') && (
-                <div className="flex gap-4">
-                     <button onClick={() => onAction(booking.id, 'reject')} className="w-[50px] h-[50px] md:w-[60px] md:h-[60px] bg-[#CE2029] rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition transform" title="Tolak">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                     </button>
-                     <button onClick={() => onAction(booking.id, 'approve')} className="w-[50px] h-[50px] md:w-[60px] md:h-[60px] bg-[#6CC24A] rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition transform" title="Setujui">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                     </button>
-                </div>
-            )}
-        </div>
-        
-        {/* DETAIL USER */}
-        <div className="bg-[#088395] rounded-[15px] p-6 flex flex-col md:flex-row items-center gap-6 mb-8 shadow-sm relative overflow-hidden">
-            <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-white/20 shrink-0 bg-gray-300">
-                <img src={booking.avatar || booking.user?.avatar || "/images/galeri-1.jpg"} alt="User" className="w-full h-full object-cover" />
-            </div>
-            <div className="text-center md:text-left text-white z-10 w-full">
-                <h3 className="font-montserrat font-bold text-2xl">{booking.name || booking.user?.nama_depan + ' ' + booking.user?.nama_belakang}</h3>
-                <div className="flex flex-col md:flex-row gap-4 mt-1 opacity-90">
-                    <div className="flex items-center gap-2 justify-center md:justify-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
-                        <span className="font-poppins font-medium text-sm">{booking.email || booking.user?.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 justify-center md:justify-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                        <span className="font-poppins font-bold text-sm bg-white/20 px-2 py-0.5 rounded">{phoneNumber}</span>
-                    </div>
-                </div>
-                <p className="font-poppins text-xs opacity-60 mt-2">ID Booking: {booking.id}</p>
+            <div className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold uppercase tracking-wider border border-yellow-200">
+                {booking.status}
             </div>
         </div>
 
-        {/* GRID INFORMASI */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-[#F7F8F9] border border-[#DADADA] rounded-[15px] p-6 h-full flex flex-col">
-                <span className="font-poppins font-semibold italic text-[16px] text-[#7C7C7C] mb-2">Peruntukan Acara</span>
-                <p className="font-poppins text-lg text-black mt-1 font-medium">{booking.purpose || booking.keperluan_peminjaman || "Tidak ada keterangan."}</p>
-                <div className="mt-6 border-t border-gray-200 pt-4">
-                    <span className="font-poppins font-semibold italic text-[14px] text-[#7C7C7C]">Peralatan Tambahan:</span>
-                    <p className="font-poppins text-md text-gray-700 mt-1">{booking.equipment || "-"}</p>
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <div className="bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] h-[60px] flex items-center px-6">
-                    <span className="font-poppins font-semibold italic text-lg text-[#7C7C7C] w-full">{booking.facility || booking.fasilitas?.nama_fasilitas}</span>
-                </div>
-                <div className="bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] h-[60px] flex items-center px-6">
-                    <span className="font-poppins font-semibold italic text-lg text-[#7C7C7C] w-full">{booking.date || booking.tanggal_reservasi}</span>
-                </div>
-                <div className="bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] h-[60px] flex items-center px-6">
-                    <span className="font-poppins font-semibold italic text-lg text-[#7C7C7C] w-full">{booking.time || booking.waktu_mulai}</span>
-                </div>
-                <div className="bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] h-[60px] flex items-center px-6 gap-3 group hover:border-[#008C9E] transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-[#008C9E]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                    <span className="font-poppins font-bold text-lg text-[#008C9E] w-full">{phoneNumber}</span>
-                </div>
-            </div>
-        </div>
-
-        {/* DOKUMEN PERSYARATAN */}
-        <div className="border-t border-gray-200 pt-6">
-            <h3 className="font-bold text-gray-800 mb-4 text-lg font-montserrat">Dokumen Persyaratan</h3>
-            <div className="flex flex-wrap gap-4">
-                {booking.file_ktp ? (
-                    <a href={getFileUrl(booking.file_ktp)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition border border-blue-200 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" /></svg> Lihat KTP
-                    </a>
-                ) : <span className="text-gray-400 text-sm">KTP Kosong</span>}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* KIRI: INFO USER */}
+            <div className="lg:col-span-4 flex flex-col items-center p-8 bg-gray-50 rounded-[20px] border border-gray-100 h-fit">
+                <img 
+                    src={booking.user?.avatar || "/images/galeri-1.jpg"} 
+                    className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-8 border-white shadow-lg mb-6" 
+                    alt="User" 
+                />
+                <h3 className="text-xl font-bold text-black text-center">{booking.name || "Pemohon"}</h3>
+                <p className="text-gray-500 text-sm mb-4">{booking.email}</p>
                 
-                {booking.file_surat_permohonan ? (
-                    <a href={getFileUrl(booking.file_surat_permohonan)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-3 bg-purple-50 text-purple-700 rounded-xl font-bold hover:bg-purple-100 transition border border-purple-200 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Surat Permohonan
-                    </a>
-                ) : <span className="text-gray-400 text-sm">Surat Permohonan Kosong</span>}
+                {/* TOMBOL COPY TELEPON */}
+                <div className="w-full mt-4 p-4 bg-white rounded-xl border border-gray-200 flex flex-col gap-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">Nomor Telepon</label>
+                    <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-dashed border-gray-300">
+                        <span className="font-mono font-bold text-gray-700">{phoneNumber}</span>
+                        <button 
+                            onClick={handleCopy}
+                            className="bg-blue-500 hover:bg-blue-600 text-white text-[10px] px-3 py-1.5 rounded-md font-bold transition-all active:scale-95 shadow-sm"
+                        >
+                            {copyStatus}
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                {booking.file_surat_pengantar && (
-                    <a href={getFileUrl(booking.file_surat_pengantar)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-3 bg-orange-50 text-orange-700 rounded-xl font-bold hover:bg-orange-100 transition border border-orange-200 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg> Surat Pengantar
-                    </a>
+            {/* DETAIL RESERVASI */}
+            <div className="lg:col-span-8 space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Fasilitas</label>
+                        <p className="text-lg font-bold text-black border-l-4 border-blue-500 pl-3">{booking.facility}</p>
+                    </div>
+                    <div>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Kategori</label>
+                        <p className="text-lg font-bold text-black border-l-4 border-purple-500 pl-3">{booking.type}</p>
+                    </div>
+                    <div>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Tanggal Pelaksanaan</label>
+                        <p className="text-lg font-bold text-black border-l-4 border-green-500 pl-3">{booking.date}</p>
+                    </div>
+                    <div>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Waktu / Jam</label>
+                        <p className="text-lg font-bold text-black border-l-4 border-orange-500 pl-3">{booking.time} WIB</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Tujuan / Keperluan</label>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-gray-700 leading-relaxed italic text-sm">
+                        "{booking.purpose}"
+                    </div>
+                </div>
+
+                {/* DOKUMEN */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {booking.file_ktp && (
+                        <a href={getFileUrl(booking.file_ktp)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition border border-blue-200 group text-xs">
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            File KTP
+                        </a>
+                    )}
+                    {booking.file_surat_permohonan && (
+                        <a href={getFileUrl(booking.file_surat_permohonan)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-5 py-3 bg-purple-50 text-purple-700 rounded-xl font-bold hover:bg-purple-100 transition border border-purple-200 group text-xs">
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Surat Permohonan
+                        </a>
+                    )}
+                </div>
+
+                {/* ACTION BUTTONS */}
+                {(booking.status === 'Diajukan' || booking.status === 'Menunggu Konfirmasi') && (
+                    <div className="flex gap-4 pt-6 border-t border-gray-100">
+                        <button 
+                            onClick={onReject} // Gunakan onReject
+                            className="flex-1 bg-red-100 text-red-600 font-bold py-4 rounded-xl hover:bg-red-200 transition-all active:scale-95 shadow-sm uppercase tracking-wider text-xs"
+                        >
+                            Tolak Permohonan
+                        </button>
+                        <button 
+                            onClick={onApprove} // Gunakan onApprove
+                            className="flex-1 bg-[#6CC24A] text-white font-bold py-4 rounded-xl hover:bg-green-600 transition-all active:scale-95 shadow-md uppercase tracking-wider text-xs"
+                        >
+                            Terima & Setujui
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

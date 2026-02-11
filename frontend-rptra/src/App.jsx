@@ -96,7 +96,7 @@ function App() {
         />
 
         <Route path="*" element={<Navigate to="/" />} />
-
+          <Route path="/lupa-password" element={<ForgotPasswordPage />} />
       </Routes>
     </Router>
   );
